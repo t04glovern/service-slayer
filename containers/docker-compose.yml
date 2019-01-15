@@ -1,0 +1,15 @@
+version: "3.6"
+
+services:
+
+  sneaky-snake-defense-api:
+    build: ./defense-api/
+    container_name: sneaky-snake-defense-api
+    ports:
+      - 3000:3000
+
+  sneaky-snake-offense-api:
+    build: ./offense-api/
+    container_name: sneaky-snake-offense-api
+    ports:
+      - 3001:3001
