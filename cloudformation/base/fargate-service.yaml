@@ -1,6 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: >-
-  Deploy a service on AWS Fargate along with some dummy containers
+Description: Deploy a service on AWS Fargate
 
 Parameters:
 
@@ -11,40 +10,23 @@ Parameters:
   VPCId:
     Type: 'AWS::EC2::VPC::Id'
     Description: VPC that should house this cluster
-
   FargateContainerSubnetIDs:
     Type: 'List<AWS::EC2::Subnet::Id>'
     Description: Subnet ID for the domain to operate in
-  TaskContainerCpu:
-    Type: Number
-    Description: How much CPU to give the tasks (combined defense and offense).
-  TaskContainerMemory:
-    Type: Number
-    Description: How much memory to give the tasks (combined defense and offense).
+  FargateCluster:
+    Type: String
+    Description: Fargate Cluster for this service to run on
 
-  ContainerDefenseName:
+  ContainerName:
     Type: String
     Description: The name of a docker image that should be run from ECR
-  ContainerDefensePort:
+  ContainerPort:
     Type: Number
     Description: What port number the application inside the docker container
-  ContainerDefenseCpu:
+  ContainerCpu:
     Type: Number
     Description: How much CPU to give the container. 1024 is 1 CPU
-  ContainerDefenseMemory:
-    Type: Number
-    Description: How much memory in megabytes to give the container
-
-  ContainerOffenseName:
-    Type: String
-    Description: The name of a docker image that should be run from ECR
-  ContainerOffensePort:
-    Type: Number
-    Description: What port number the application inside the docker container
-  ContainerOffenseCpu:
-    Type: Number
-    Description: How much CPU to give the container. 1024 is 1 CPU
-  ContainerOffenseMemory:
+  ContainerMemory:
     Type: Number
     Description: How much memory in megabytes to give the container
 
@@ -93,20 +75,7 @@ Resources:
                     - ':'
                     - !Ref 'AWS::AccountId'
                     - ':repository/'
-                    - !Ref ContainerDefenseName
-              - Effect: Allow
-                Action:
-                  - 'ecr:BatchCheckLayerAvailability'
-                  - 'ecr:GetDownloadUrlForLayer'
-                  - 'ecr:BatchGetImage'
-                Resource: !Join
-                  - ''
-                  - - 'arn:aws:ecr:'
-                    - !Ref 'AWS::Region'
-                    - ':'
-                    - !Ref 'AWS::AccountId'
-                    - ':repository/'
-                    - !Ref ContainerOffenseName
+                    - !Ref ContainerName
               - Effect: Allow
                 Action:
                   - 'ecr:GetAuthorizationToken'
@@ -116,44 +85,26 @@ Resources:
     Type: 'AWS::ECS::TaskDefinition'
     Properties:
       Family: !Sub '${ServiceName}-task'
-      Cpu: !Ref TaskContainerCpu
-      Memory: !Ref TaskContainerMemory
+      Cpu: !Ref ContainerCpu
+      Memory: !Ref ContainerMemory
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE
       ExecutionRoleArn: !Ref fargateTaskExecutionRole
       ContainerDefinitions:
-        - Name: !Sub '${ServiceName}-defense'
-          Cpu: !Ref ContainerDefenseCpu
-          Memory: !Ref ContainerDefenseMemory
+        - Name: !Sub '${ServiceName}'
+          Cpu: !Ref ContainerCpu
+          Memory: !Ref ContainerMemory
           Image: !Join
                   - ''
                   - - !Ref 'AWS::AccountId'
                     - '.dkr.ecr.'
                     - !Ref 'AWS::Region'
                     - '.amazonaws.com/'
-                    - !Ref ContainerDefenseName
+                    - !Ref ContainerName
                     - ':latest'
           PortMappings:
-            - ContainerPort: !Ref ContainerDefensePort
-        - Name: !Sub '${ServiceName}-offence'
-          Cpu: !Ref ContainerOffenseCpu
-          Memory: !Ref ContainerOffenseMemory
-          Image: !Join
-                  - ''
-                  - - !Ref 'AWS::AccountId'
-                    - '.dkr.ecr.'
-                    - !Ref 'AWS::Region'
-                    - '.amazonaws.com/'
-                    - !Ref ContainerOffenseName
-                    - ':latest'
-          PortMappings:
-            - ContainerPort: !Ref ContainerOffensePort
-
-  fargateCluster:
-    Type: 'AWS::ECS::Cluster'
-    Properties:
-      ClusterName: !Sub '${ServiceName}-cluster'
+            - ContainerPort: !Ref ContainerPort
 
   fargateContainerSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
@@ -162,19 +113,18 @@ Resources:
       SecurityGroupIngress:
         - Description: Container port
           IpProtocol: tcp
-          FromPort: !Ref ContainerDefensePort
-          ToPort: !Ref ContainerOffensePort
+          FromPort: !Ref ContainerPort
+          ToPort: !Ref ContainerPort
           SourceSecurityGroupId: !Ref loadBalancerSecurityGroup
       VpcId: !Ref VPCId
 
   fargateService:
     Type: 'AWS::ECS::Service'
     DependsOn:
-      - httpLoadBalancerDefenseListener
-      - httpLoadBalancerOffenseListener
+      - httpLoadBalancerListener
     Properties:
       ServiceName: !Sub '${ServiceName}-service'
-      Cluster: !Ref fargateCluster
+      Cluster: !Ref FargateCluster
       LaunchType: FARGATE
       DeploymentConfiguration:
         MaximumPercent: 200
@@ -189,9 +139,9 @@ Resources:
           Subnets: !Ref FargateContainerSubnetIDs
       TaskDefinition: !Ref fargateTaskDefinition
       LoadBalancers:
-        - ContainerName: !Sub '${ServiceName}-defense'
-          ContainerPort: !Ref ContainerDefensePort
-          TargetGroupArn: !Ref targetGroupDefense
+        - ContainerName: !Sub '${ServiceName}'
+          ContainerPort: !Ref ContainerPort
+          TargetGroupArn: !Ref targetGroup
 
   loadBalancerSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
@@ -201,8 +151,8 @@ Resources:
         - CidrIp: 0.0.0.0/0
           Description: HTTP Web Port from Load Balancer
           IpProtocol: tcp
-          FromPort: !Ref ContainerDefensePort
-          ToPort: !Ref ContainerOffensePort
+          FromPort: !Ref ContainerPort
+          ToPort: !Ref ContainerPort
       VpcId: !Ref VPCId
 
   loadBalancer:
@@ -220,31 +170,19 @@ Resources:
         - !Ref loadBalancerSecurityGroup
       Subnets: !Ref FargateContainerSubnetIDs
 
-  httpLoadBalancerDefenseListener:
+  httpLoadBalancerListener:
     Type: 'AWS::ElasticLoadBalancingV2::Listener'
     DependsOn:
       - loadBalancer
     Properties:
       DefaultActions:
-        - TargetGroupArn: !Ref targetGroupDefense
+        - TargetGroupArn: !Ref targetGroup
           Type: forward
       LoadBalancerArn: !Ref loadBalancer
-      Port: !Ref ContainerDefensePort
+      Port: !Ref ContainerPort
       Protocol: HTTP
 
-  httpLoadBalancerOffenseListener:
-    Type: 'AWS::ElasticLoadBalancingV2::Listener'
-    DependsOn:
-      - loadBalancer
-    Properties:
-      DefaultActions:
-        - TargetGroupArn: !Ref targetGroupOffense
-          Type: forward
-      LoadBalancerArn: !Ref loadBalancer
-      Port: !Ref ContainerOffensePort
-      Protocol: HTTP
-
-  targetGroupDefense:
+  targetGroup:
     Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
     Properties:
       HealthCheckIntervalSeconds: 6
@@ -256,26 +194,8 @@ Resources:
       Name: !Join
         - '-'
         - - !Ref ServiceName
-          - forward-defense
-      Port: !Ref ContainerDefensePort
-      Protocol: HTTP
-      UnhealthyThresholdCount: 2
-      VpcId: !Ref VPCId
-
-  targetGroupOffense:
-    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
-    Properties:
-      HealthCheckIntervalSeconds: 6
-      HealthCheckPath: !Ref HealthEndpoint
-      HealthCheckProtocol: HTTP
-      HealthCheckTimeoutSeconds: 5
-      HealthyThresholdCount: 2
-      TargetType: ip
-      Name: !Join
-        - '-'
-        - - !Ref ServiceName
-          - forward-offense
-      Port: !Ref ContainerOffensePort
+          - forward
+      Port: !Ref ContainerPort
       Protocol: HTTP
       UnhealthyThresholdCount: 2
       VpcId: !Ref VPCId
@@ -288,30 +208,13 @@ Outputs:
       - loadBalancer
       - DNSName
 
-  DefenseEndpointUrl:
-    Description: Request URL for the Defense API endpoint
+  EndpointUrl:
+    Description: Request URL for the API endpoint
     Value: !Join
       - ''
       - - !GetAtt
           - loadBalancer
           - DNSName
         - ':'
-        - !Ref ContainerDefensePort
+        - !Ref ContainerPort
         - '/'
-
-  OffenseEndpointUrl:
-    Description: Request URL for the Offense API endpoint
-    Value: !Join
-      - ''
-      - - !GetAtt
-          - loadBalancer
-          - DNSName
-        - ':'
-        - !Ref ContainerOffensePort
-        - '/'
-
-  SneakySnakeFargate:
-    Description: SneakySnake Fargate Cluster
-    Value: !Ref fargateCluster
-    Export:
-      Name: !Sub '${ServiceName}-cluster'

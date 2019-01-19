@@ -1,0 +1,218 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: SneakySnake Stack deployment
+
+Metadata:
+
+  Authors:
+    Description: Nathan Glover (nathan@glovers.id.au)
+
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+    - Label:
+        default: Project Information
+      Parameters:
+        - ProjectName
+
+    - Label:
+        default: Networking Resources
+      Parameters:
+        - VPCId
+        - SubnetIDs
+
+    - Label:
+        default: Base Fargate Cluster
+      Parameters:
+        - ClusterName
+
+    - Label:
+        default: Defense Fargate Service
+      Parameters:
+        - DefenseServiceName
+        - DefenseContainerName
+        - DefenseContainerPort
+        - DefenseContainerCpu
+        - DefenseContainerMemory
+        - DefenseDesiredCount
+        - DefenseHealthEndpoint
+
+    - Label:
+        default: Offense Fargate Service
+      Parameters:
+        - OffenseServiceName
+        - OffenseContainerName
+        - OffenseContainerPort
+        - OffenseContainerCpu
+        - OffenseContainerMemory
+        - OffenseDesiredCount
+        - OffenseHealthEndpoint
+
+  ParameterLabels:
+    ProjectName:
+      default: Project Name
+
+    VPCId:
+      default: Project VPC
+    SubnetIDs:
+      default: Project Subnets
+
+    ClusterName:
+      default: Cluster Name
+
+    DefenseServiceName:
+      default: Service Name
+    DefenseContainerName:
+      default: Docker Image Name
+    DefenseContainerPort:
+      default: Container Port
+    DefenseContainerCpu:
+      default: Container Cpu
+    DefenseContainerMemory:
+      default: Container Memory
+    DefenseDesiredCount:
+      default: Number of Tasks
+    DefenseHealthEndpoint:
+      default: Health Check Endpoint
+
+    OffenseServiceName:
+      default: Service Name
+    OffenseContainerName:
+      default: Docker Image Name
+    OffenseContainerPort:
+      default: Container Port
+    OffenseContainerCpu:
+      default: Container Cpu
+    OffenseContainerMemory:
+      default: Container Memory
+    OffenseDesiredCount:
+      default: Number of Tasks
+    OffenseHealthEndpoint:
+      default: Health Check Endpoint
+
+Parameters:
+
+  ProjectName:
+    Description: Project Name (used for Tagging)
+    Type: String
+
+  VPCId:
+    Type: 'AWS::EC2::VPC::Id'
+    Description: VPC that should house this cluster
+  SubnetIDs:
+    Type: 'List<AWS::EC2::Subnet::Id>'
+    Description: Subnet ID for the domain to operate in
+
+  ClusterName:
+    Description: Fargate Cluster Name (will be exported for use with resources in this project)
+    Type: String
+
+  DefenseServiceName:
+    Type: String
+    Description: Name given to the service being run on the Fargate Cluster
+  DefenseContainerName:
+    Type: String
+    Description: The name of a docker image that should be run from ECR
+  DefenseContainerPort:
+    Type: Number
+    Description: What port number the application inside the docker container
+  DefenseContainerCpu:
+    Type: Number
+    Description: How much CPU to give the container. 1024 is 1 CPU
+  DefenseContainerMemory:
+    Type: Number
+    Description: How much memory in megabytes to give the container
+  DefenseDesiredCount:
+    Type: Number
+    Description: How many copies of the service task to run
+  DefenseHealthEndpoint:
+    Type: String
+    Description: Health Endpoint to target via Application load balancer health checks
+
+  OffenseServiceName:
+    Type: String
+    Description: Name given to the service being run on the Fargate Cluster
+  OffenseContainerName:
+    Type: String
+    Description: The name of a docker image that should be run from ECR
+  OffenseContainerPort:
+    Type: Number
+    Description: What port number the application inside the docker container
+  OffenseContainerCpu:
+    Type: Number
+    Description: How much CPU to give the container. 1024 is 1 CPU
+  OffenseContainerMemory:
+    Type: Number
+    Description: How much memory in megabytes to give the container
+  OffenseDesiredCount:
+    Type: Number
+    Description: How many copies of the service task to run
+  OffenseHealthEndpoint:
+    Type: String
+    Description: Health Endpoint to target via Application load balancer health checks
+
+Resources:
+
+  baseFargate:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        ProjectName:
+          !Ref ProjectName
+        ClusterName:
+          !Ref ClusterName
+      TemplateURL: https://s3.amazonaws.com/devopstar/resources/sneaky-snake/cloudformation/base/fargate-cluster.yaml
+
+  defenseService:
+    DependsOn: [ baseFargate ]
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        ServiceName:
+          !Ref DefenseServiceName
+        VPCId:
+          !Ref VPCId
+        FargateContainerSubnetIDs:
+          !Join [ ',', [ !Select [ 0, !Ref SubnetIDs ], !Select [ 1, !Ref SubnetIDs ] ] ]
+        FargateCluster:
+          !GetAtt [ baseFargate, Outputs.FargateCluster ]
+        ContainerName:
+          !Ref DefenseContainerName
+        ContainerPort:
+          !Ref DefenseContainerPort
+        ContainerCpu:
+          !Ref DefenseContainerCpu
+        ContainerMemory:
+          !Ref DefenseContainerMemory
+        DesiredCount:
+          !Ref DefenseDesiredCount
+        HealthEndpoint:
+          !Ref DefenseHealthEndpoint
+      TemplateURL: https://s3.amazonaws.com/devopstar/resources/sneaky-snake/cloudformation/base/fargate-service.yaml
+
+  offenseService:
+    DependsOn: [ baseFargate ]
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        ServiceName:
+          !Ref OffenseServiceName
+        VPCId:
+          !Ref VPCId
+        FargateContainerSubnetIDs:
+          !Join [ ',', [ !Select [ 0, !Ref SubnetIDs ], !Select [ 1, !Ref SubnetIDs ] ] ]
+        FargateCluster:
+          !GetAtt [ baseFargate, Outputs.FargateCluster ]
+        ContainerName:
+          !Ref OffenseContainerName
+        ContainerPort:
+          !Ref OffenseContainerPort
+        ContainerCpu:
+          !Ref OffenseContainerCpu
+        ContainerMemory:
+          !Ref OffenseContainerMemory
+        DesiredCount:
+          !Ref OffenseDesiredCount
+        HealthEndpoint:
+          !Ref OffenseHealthEndpoint
+      TemplateURL: https://s3.amazonaws.com/devopstar/resources/sneaky-snake/cloudformation/base/fargate-service.yaml

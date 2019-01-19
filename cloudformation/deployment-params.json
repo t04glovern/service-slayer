@@ -1,0 +1,74 @@
+[
+    {
+        "ParameterKey": "ProjectName",
+        "ParameterValue": "Sneaky Snake"
+    },
+    {
+        "ParameterKey": "VPCId",
+        "ParameterValue": "vpc-xxxxxxxx"
+    },
+    {
+        "ParameterKey": "SubnetIDs",
+        "ParameterValue": "subnet-xxxxxxxx,subnet-xxxxxxxx"
+    },
+    {
+        "ParameterKey": "ClusterName",
+        "ParameterValue": "sneaky-snake-cluster"
+    },
+    {
+        "ParameterKey": "DefenseServiceName",
+        "ParameterValue": "sneaky-snake-defense-api"
+    },
+    {
+        "ParameterKey": "DefenseContainerName",
+        "ParameterValue": "sneaky-snake-defense-api"
+    },
+    {
+        "ParameterKey": "DefenseContainerPort",
+        "ParameterValue": "3000"
+    },
+    {
+        "ParameterKey": "DefenseContainerCpu",
+        "ParameterValue": "256"
+    },
+    {
+        "ParameterKey": "DefenseContainerMemory",
+        "ParameterValue": "512"
+    },
+    {
+        "ParameterKey": "DefenseDesiredCount",
+        "ParameterValue": "2"
+    },
+    {
+        "ParameterKey": "DefenseHealthEndpoint",
+        "ParameterValue": "/"
+    },
+    {
+        "ParameterKey": "OffenseServiceName",
+        "ParameterValue": "sneaky-snake-offense-api"
+    },
+    {
+        "ParameterKey": "OffenseContainerName",
+        "ParameterValue": "sneaky-snake-offense-api"
+    },
+    {
+        "ParameterKey": "OffenseContainerPort",
+        "ParameterValue": "3001"
+    },
+    {
+        "ParameterKey": "OffenseContainerCpu",
+        "ParameterValue": "256"
+    },
+    {
+        "ParameterKey": "OffenseContainerMemory",
+        "ParameterValue": "512"
+    },
+    {
+        "ParameterKey": "OffenseDesiredCount",
+        "ParameterValue": "2"
+    },
+    {
+        "ParameterKey": "OffenseHealthEndpoint",
+        "ParameterValue": "/"
+    }
+]
