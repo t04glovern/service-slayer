@@ -82,6 +82,28 @@ Resources:
                   - 'ecr:GetAuthorizationToken'
                 Resource: '*'
 
+  fargateTaskRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ecs-tasks.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: ecs
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'ecs:ListTasks'
+                Resource: '*'
+
   fargateLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -98,8 +120,14 @@ Resources:
       RequiresCompatibilities:
         - FARGATE
       ExecutionRoleArn: !Ref fargateTaskExecutionRole
+      TaskRoleArn: !Ref fargateTaskRole
       ContainerDefinitions:
         - Name: !Sub '${ServiceName}'
+          Environment:
+            - Name: REGION_NAME
+              Value: !Ref 'AWS::Region'
+            - Name: CLUSTER_NAME
+              Value: !Ref FargateCluster
           Cpu: !Ref ContainerCpu
           Memory: !Ref ContainerMemory
           Image: !Join

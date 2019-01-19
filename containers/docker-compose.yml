@@ -2,6 +2,15 @@ version: "3.6"
 
 services:
 
+  sneaky-snake-arbiter-api:
+    build: ./arbiter-api/
+    container_name: sneaky-snake-arbiter-api
+    ports:
+      - 2999:2999
+    environment:
+      - CLUSTER_NAME=sneaky-snake-cluster
+      - REGION_NAME=us-east-1
+
   sneaky-snake-defense-api:
     build: ./defense-api/
     container_name: sneaky-snake-defense-api

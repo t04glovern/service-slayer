@@ -15,26 +15,19 @@ aws cloudformation create-stack \
 ### Resources
 
 * **AWS::ECS::Cluster**:            sneaky-snake-cluster
+* **AWS::ECS::Service**:            sneaky-snake-arbiter-api-service
 * **AWS::ECS::Service**:            sneaky-snake-offense-api-service
 * **AWS::ECS::Service**:            sneaky-snake-defense-api-service
+* **AWS::ECS::TaskDefinition**:     sneaky-snake-arbiter-api-task
 * **AWS::ECS::TaskDefinition**:     sneaky-snake-defense-api-task
 * **AWS::ECS::TaskDefinition**:     sneaky-snake-offense-api-task
 
 ### Endpoints
 
+* **arbiter-api**: `http://<sneaky-snake-arbiter-api-lb>:2999/`
 * **defense-api**: `http://<sneaky-snake-defense-api-lb>:3000/`
 * **offense-api**: `http://<sneaky-snake-offense-api-lb>:3001/`
 
-## Research
+#### Tasks
 
-### List Tasks
-
-```bash
-aws ecs list-tasks --cluster sneaky-snake-cluster
-```
-
-### Stop Tasks
-
-```bash
-aws ecs stop-task --task <task_id> --cluster sneaky-snake-cluster
-```
+* **arbiter-api**: `http://<sneaky-snake-arbiter-api-lb>:2999/tasks`

@@ -70,5 +70,33 @@
     {
         "ParameterKey": "OffenseHealthEndpoint",
         "ParameterValue": "/"
+    },
+    {
+        "ParameterKey": "ArbiterServiceName",
+        "ParameterValue": "sneaky-snake-arbiter-api"
+    },
+    {
+        "ParameterKey": "ArbiterContainerName",
+        "ParameterValue": "sneaky-snake-arbiter-api"
+    },
+    {
+        "ParameterKey": "ArbiterContainerPort",
+        "ParameterValue": "2999"
+    },
+    {
+        "ParameterKey": "ArbiterContainerCpu",
+        "ParameterValue": "256"
+    },
+    {
+        "ParameterKey": "ArbiterContainerMemory",
+        "ParameterValue": "512"
+    },
+    {
+        "ParameterKey": "ArbiterDesiredCount",
+        "ParameterValue": "1"
+    },
+    {
+        "ParameterKey": "ArbiterHealthEndpoint",
+        "ParameterValue": "/"
     }
 ]

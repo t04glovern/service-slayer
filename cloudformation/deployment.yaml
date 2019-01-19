@@ -48,6 +48,17 @@ Metadata:
         - OffenseDesiredCount
         - OffenseHealthEndpoint
 
+    - Label:
+        default: Arbiter Fargate Service
+      Parameters:
+        - ArbiterServiceName
+        - ArbiterContainerName
+        - ArbiterContainerPort
+        - ArbiterContainerCpu
+        - ArbiterContainerMemory
+        - ArbiterDesiredCount
+        - ArbiterHealthEndpoint
+
   ParameterLabels:
     ProjectName:
       default: Project Name
@@ -88,6 +99,21 @@ Metadata:
     OffenseDesiredCount:
       default: Number of Tasks
     OffenseHealthEndpoint:
+      default: Health Check Endpoint
+
+    ArbiterServiceName:
+      default: Service Name
+    ArbiterContainerName:
+      default: Docker Image Name
+    ArbiterContainerPort:
+      default: Container Port
+    ArbiterContainerCpu:
+      default: Container Cpu
+    ArbiterContainerMemory:
+      default: Container Memory
+    ArbiterDesiredCount:
+      default: Number of Tasks
+    ArbiterHealthEndpoint:
       default: Health Check Endpoint
 
 Parameters:
@@ -148,6 +174,28 @@ Parameters:
     Type: Number
     Description: How many copies of the service task to run
   OffenseHealthEndpoint:
+    Type: String
+    Description: Health Endpoint to target via Application load balancer health checks
+
+  ArbiterServiceName:
+    Type: String
+    Description: Name given to the service being run on the Fargate Cluster
+  ArbiterContainerName:
+    Type: String
+    Description: The name of a docker image that should be run from ECR
+  ArbiterContainerPort:
+    Type: Number
+    Description: What port number the application inside the docker container
+  ArbiterContainerCpu:
+    Type: Number
+    Description: How much CPU to give the container. 1024 is 1 CPU
+  ArbiterContainerMemory:
+    Type: Number
+    Description: How much memory in megabytes to give the container
+  ArbiterDesiredCount:
+    Type: Number
+    Description: How many copies of the service task to run
+  ArbiterHealthEndpoint:
     Type: String
     Description: Health Endpoint to target via Application load balancer health checks
 
@@ -216,3 +264,30 @@ Resources:
         HealthEndpoint:
           !Ref OffenseHealthEndpoint
       TemplateURL: https://s3.amazonaws.com/devopstar/resources/sneaky-snake/cloudformation/base/fargate-service.yaml
+
+  arbiterService:
+    DependsOn: [ baseFargate ]
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        ServiceName:
+          !Ref ArbiterServiceName
+        VPCId:
+          !Ref VPCId
+        FargateContainerSubnetIDs:
+          !Join [ ',', [ !Select [ 0, !Ref SubnetIDs ], !Select [ 1, !Ref SubnetIDs ] ] ]
+        FargateCluster:
+          !GetAtt [ baseFargate, Outputs.FargateCluster ]
+        ContainerName:
+          !Ref ArbiterContainerName
+        ContainerPort:
+          !Ref ArbiterContainerPort
+        ContainerCpu:
+          !Ref ArbiterContainerCpu
+        ContainerMemory:
+          !Ref ArbiterContainerMemory
+        DesiredCount:
+          !Ref ArbiterDesiredCount
+        HealthEndpoint:
+          !Ref ArbiterHealthEndpoint
+      TemplateURL: https://s3.amazonaws.com/devopstar/resources/sneaky-snake/cloudformation/extended/fargate-service-arbiter.yaml
