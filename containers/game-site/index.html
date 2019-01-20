@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Spaceship</title>
+    </head>
+        <script src="/src/lib/pixi.min.js"></script>
+        <script src="/src/Player.js"></script>
+        <script src="/src/Docker.js"></script>
+        <script src="/src/Enemy.js"></script>
+        <script src="/src/Rocket.js"></script>
+        <script src="/src/main.js"></script>
+    <body>
+        <script type="text/javascript">
+
+            var type = "WebGL";
+
+            if (!PIXI.utils.isWebGLSupported()) {
+                type = "canvas";
+            }
+
+            PIXI.utils.sayHello(type);
+
+            var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.view);
+        </script>
+        <style>
+            body {
+    			margin: 0pt;
+    			text-align: center;
+    			overflow: hidden;
+            }
+        </style>
+    </body>
+</html>

@@ -22,3 +22,9 @@ services:
     container_name: sneaky-snake-offense-api
     ports:
       - 3001:3001
+
+  sneaky-snake-game-site:
+    build: ./game-site/
+    container_name: sneaky-snake-game-site
+    ports:
+      - 80:80
