@@ -1,7 +1,7 @@
 ---
 AWSTemplateFormatVersion: 2010-09-09
 
-Description: SneakySnake Stack deployment
+Description: Nested Fargate Stack deployment
 
 Metadata:
 
@@ -58,6 +58,35 @@ Metadata:
         - ArbiterDesiredCount
         - ArbiterHealthEndpoint
 
+    - Label:
+        default: Codebuild Base
+      Parameters:
+        - CodeRepositoryURL
+
+    - Label:
+        default: Defense Codebuild Service
+      Parameters:
+        - DefenseBuildspecLocation
+        - DefenseEnvironmentType
+        - DefenseComputeType
+        - DefenseBuildImage
+
+    - Label:
+        default: Offense Codebuild Service
+      Parameters:
+        - OffenseBuildspecLocation
+        - OffenseEnvironmentType
+        - OffenseComputeType
+        - OffenseBuildImage
+
+    - Label:
+        default: Arbiter Codebuild Service
+      Parameters:
+        - ArbiterBuildspecLocation
+        - ArbiterEnvironmentType
+        - ArbiterComputeType
+        - ArbiterBuildImage
+
   ParameterLabels:
     ProjectName:
       default: Project Name
@@ -112,6 +141,36 @@ Metadata:
       default: Number of Tasks
     ArbiterHealthEndpoint:
       default: Health Check Endpoint
+
+    CodeRepositoryURL:
+      default: Git Repo URL
+
+    DefenseBuildspecLocation:
+      default: buildspec file
+    DefenseEnvironmentType:
+      default: Build OS
+    DefenseComputeType:
+      default: Build Resource
+    DefenseBuildImage:
+      default: Build Image
+
+    OffenseBuildspecLocation:
+      default: buildspec file
+    OffenseEnvironmentType:
+      default: Build OS
+    OffenseComputeType:
+      default: Build Resource
+    OffenseBuildImage:
+      default: Build Image
+
+    ArbiterBuildspecLocation:
+      default: buildspec file
+    ArbiterEnvironmentType:
+      default: Build OS
+    ArbiterComputeType:
+      default: Build Resource
+    ArbiterBuildImage:
+      default: Build Image
 
 Parameters:
 
@@ -193,6 +252,70 @@ Parameters:
     Type: String
     Description: Health Endpoint to target via Application load balancer health checks
 
+  CodeRepositoryURL:
+    Description: URL of the repo which contains CFN template.
+    Type: String
+
+  DefenseBuildspecLocation:
+    Description: Location of buildspec configuration
+    Type: String
+  DefenseEnvironmentType:
+    Description: Type of build environment to use for related builds.
+    Type: String
+    AllowedValues:
+      - WINDOWS_CONTAINER
+      - LINUX_CONTAINER
+  DefenseComputeType:
+    Description: Compute resources the build project will use to build.
+    Type: String
+    AllowedValues:
+      - BUILD_GENERAL1_SMALL
+      - BUILD_GENERAL1_MEDIUM
+      - BUILD_GENERAL1_LARGE
+  DefenseBuildImage:
+    Description: System Image identifier of the image to use for code build
+    Type: String
+
+  OffenseBuildspecLocation:
+    Description: Location of buildspec configuration
+    Type: String
+  OffenseEnvironmentType:
+    Description: Type of build environment to use for related builds.
+    Type: String
+    AllowedValues:
+      - WINDOWS_CONTAINER
+      - LINUX_CONTAINER
+  OffenseComputeType:
+    Description: Compute resources the build project will use to build.
+    Type: String
+    AllowedValues:
+      - BUILD_GENERAL1_SMALL
+      - BUILD_GENERAL1_MEDIUM
+      - BUILD_GENERAL1_LARGE
+  OffenseBuildImage:
+    Description: System Image identifier of the image to use for code build
+    Type: String
+
+  ArbiterBuildspecLocation:
+    Description: Location of buildspec configuration
+    Type: String
+  ArbiterEnvironmentType:
+    Description: Type of build environment to use for related builds.
+    Type: String
+    AllowedValues:
+      - WINDOWS_CONTAINER
+      - LINUX_CONTAINER
+  ArbiterComputeType:
+    Description: Compute resources the build project will use to build.
+    Type: String
+    AllowedValues:
+      - BUILD_GENERAL1_SMALL
+      - BUILD_GENERAL1_MEDIUM
+      - BUILD_GENERAL1_LARGE
+  ArbiterBuildImage:
+    Description: System Image identifier of the image to use for code build
+    Type: String
+
 Resources:
 
   baseFargate:
@@ -203,7 +326,7 @@ Resources:
           !Ref ProjectName
         ClusterName:
           !Ref ClusterName
-      TemplateURL: https://s3.amazonaws.com/devopstar/resources/sneaky-snake/cloudformation/base/fargate-cluster.yaml
+      TemplateURL: https://s3.amazonaws.com/devopstar/resources/service-slayer/cloudformation/base/fargate-cluster.yaml
 
   baseNetworking:
     Type: AWS::CloudFormation::Stack
@@ -211,7 +334,7 @@ Resources:
       Parameters:
         ClassB:
           !Ref ClassB
-      TemplateURL: https://s3.amazonaws.com/devopstar/resources/sneaky-snake/cloudformation/base/vpc-networking.yaml
+      TemplateURL: https://s3.amazonaws.com/devopstar/resources/service-slayer/cloudformation/base/vpc-networking.yaml
 
   defenseService:
     DependsOn: [ baseFargate, baseNetworking ]
@@ -238,7 +361,7 @@ Resources:
           !Ref DefenseDesiredCount
         HealthEndpoint:
           !Ref DefenseHealthEndpoint
-      TemplateURL: https://s3.amazonaws.com/devopstar/resources/sneaky-snake/cloudformation/base/fargate-service.yaml
+      TemplateURL: https://s3.amazonaws.com/devopstar/resources/service-slayer/cloudformation/base/fargate-service.yaml
 
   offenseService:
     DependsOn: [ baseFargate, baseNetworking ]
@@ -265,7 +388,7 @@ Resources:
           !Ref OffenseDesiredCount
         HealthEndpoint:
           !Ref OffenseHealthEndpoint
-      TemplateURL: https://s3.amazonaws.com/devopstar/resources/sneaky-snake/cloudformation/base/fargate-service.yaml
+      TemplateURL: https://s3.amazonaws.com/devopstar/resources/service-slayer/cloudformation/base/fargate-service.yaml
 
   arbiterService:
     DependsOn: [ baseFargate, baseNetworking ]
@@ -292,4 +415,85 @@ Resources:
           !Ref ArbiterDesiredCount
         HealthEndpoint:
           !Ref ArbiterHealthEndpoint
-      TemplateURL: https://s3.amazonaws.com/devopstar/resources/sneaky-snake/cloudformation/extended/fargate-service-arbiter.yaml
+      TemplateURL: https://s3.amazonaws.com/devopstar/resources/service-slayer/cloudformation/extended/fargate-service-arbiter.yaml
+
+  defenseCodebuild:
+    DependsOn: [ baseFargate, baseNetworking, defenseService ]
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        VPC:
+          !GetAtt [ baseNetworking, Outputs.VPC ]
+        SubnetIDs:
+          !GetAtt [ baseNetworking, Outputs.SubnetsPublic ]
+        FargateCluster:
+          !GetAtt [ baseFargate, Outputs.FargateCluster ]
+        FargateService:
+          !Ref DefenseServiceName
+        CodeRepositoryURL:
+          !Ref CodeRepositoryURL
+        BuildspecLocation:
+          !Ref DefenseBuildspecLocation
+        ImageRepoName:
+          !Ref DefenseContainerName
+        EnvironmentType:
+          !Ref DefenseEnvironmentType
+        ComputeType:
+          !Ref DefenseComputeType
+        BuildImage:
+          !Ref DefenseBuildImage
+      TemplateURL: https://s3.amazonaws.com/devopstar/resources/service-slayer/cloudformation/cicd/codebuild.yaml
+
+  offenseCodebuild:
+    DependsOn: [ baseFargate, baseNetworking, offenseService ]
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        VPC:
+          !GetAtt [ baseNetworking, Outputs.VPC ]
+        SubnetIDs:
+          !GetAtt [ baseNetworking, Outputs.SubnetsPublic ]
+        FargateCluster:
+          !GetAtt [ baseFargate, Outputs.FargateCluster ]
+        FargateService:
+          !Ref OffenseServiceName
+        CodeRepositoryURL:
+          !Ref CodeRepositoryURL
+        BuildspecLocation:
+          !Ref OffenseBuildspecLocation
+        ImageRepoName:
+          !Ref OffenseContainerName
+        EnvironmentType:
+          !Ref OffenseEnvironmentType
+        ComputeType:
+          !Ref OffenseComputeType
+        BuildImage:
+          !Ref OffenseBuildImage
+      TemplateURL: https://s3.amazonaws.com/devopstar/resources/service-slayer/cloudformation/cicd/codebuild.yaml
+
+  arbiterCodebuild:
+    DependsOn: [ baseFargate, baseNetworking, arbiterService ]
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        VPC:
+          !GetAtt [ baseNetworking, Outputs.VPC ]
+        SubnetIDs:
+          !GetAtt [ baseNetworking, Outputs.SubnetsPublic ]
+        FargateCluster:
+          !GetAtt [ baseFargate, Outputs.FargateCluster ]
+        FargateService:
+          !Ref ArbiterServiceName
+        CodeRepositoryURL:
+          !Ref CodeRepositoryURL
+        BuildspecLocation:
+          !Ref ArbiterBuildspecLocation
+        ImageRepoName:
+          !Ref ArbiterContainerName
+        EnvironmentType:
+          !Ref ArbiterEnvironmentType
+        ComputeType:
+          !Ref ArbiterComputeType
+        BuildImage:
+          !Ref ArbiterBuildImage
+      TemplateURL: https://s3.amazonaws.com/devopstar/resources/service-slayer/cloudformation/cicd/codebuild.yaml

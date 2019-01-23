@@ -1,98 +1,45 @@
 [
-    {
-        "ParameterKey": "ProjectName",
-        "ParameterValue": "Sneaky Snake"
-    },
-    {
-        "ParameterKey": "ClassB",
-        "ParameterValue": "160"
-    },
-    {
-        "ParameterKey": "ClusterName",
-        "ParameterValue": "sneaky-snake-cluster"
-    },
-    {
-        "ParameterKey": "DefenseServiceName",
-        "ParameterValue": "sneaky-snake-defense-api"
-    },
-    {
-        "ParameterKey": "DefenseContainerName",
-        "ParameterValue": "sneaky-snake-defense-api"
-    },
-    {
-        "ParameterKey": "DefenseContainerPort",
-        "ParameterValue": "3000"
-    },
-    {
-        "ParameterKey": "DefenseContainerCpu",
-        "ParameterValue": "256"
-    },
-    {
-        "ParameterKey": "DefenseContainerMemory",
-        "ParameterValue": "512"
-    },
-    {
-        "ParameterKey": "DefenseDesiredCount",
-        "ParameterValue": "2"
-    },
-    {
-        "ParameterKey": "DefenseHealthEndpoint",
-        "ParameterValue": "/"
-    },
-    {
-        "ParameterKey": "OffenseServiceName",
-        "ParameterValue": "sneaky-snake-offense-api"
-    },
-    {
-        "ParameterKey": "OffenseContainerName",
-        "ParameterValue": "sneaky-snake-offense-api"
-    },
-    {
-        "ParameterKey": "OffenseContainerPort",
-        "ParameterValue": "3001"
-    },
-    {
-        "ParameterKey": "OffenseContainerCpu",
-        "ParameterValue": "256"
-    },
-    {
-        "ParameterKey": "OffenseContainerMemory",
-        "ParameterValue": "512"
-    },
-    {
-        "ParameterKey": "OffenseDesiredCount",
-        "ParameterValue": "2"
-    },
-    {
-        "ParameterKey": "OffenseHealthEndpoint",
-        "ParameterValue": "/"
-    },
-    {
-        "ParameterKey": "ArbiterServiceName",
-        "ParameterValue": "sneaky-snake-arbiter-api"
-    },
-    {
-        "ParameterKey": "ArbiterContainerName",
-        "ParameterValue": "sneaky-snake-arbiter-api"
-    },
-    {
-        "ParameterKey": "ArbiterContainerPort",
-        "ParameterValue": "2999"
-    },
-    {
-        "ParameterKey": "ArbiterContainerCpu",
-        "ParameterValue": "256"
-    },
-    {
-        "ParameterKey": "ArbiterContainerMemory",
-        "ParameterValue": "512"
-    },
-    {
-        "ParameterKey": "ArbiterDesiredCount",
-        "ParameterValue": "1"
-    },
-    {
-        "ParameterKey": "ArbiterHealthEndpoint",
-        "ParameterValue": "/"
-    }
+    { "ParameterKey":"ProjectName",              "ParameterValue":"Sneaky Snake" },
+    { "ParameterKey":"ClassB",                   "ParameterValue":"160" },
+    { "ParameterKey":"ClusterName",              "ParameterValue":"service-slayer-cluster" },
+    { "ParameterKey":"CodeRepositoryURL",        "ParameterValue":"https://github.com/t04glovern/service-slayer" },
+
+    { "ParameterKey":"DefenseServiceName",       "ParameterValue":"service-slayer-defense-api" },
+    { "ParameterKey":"DefenseContainerName",     "ParameterValue":"service-slayer-defense-api" },
+    { "ParameterKey":"DefenseContainerPort",     "ParameterValue":"3000" },
+    { "ParameterKey":"DefenseContainerCpu",      "ParameterValue":"256" },
+    { "ParameterKey":"DefenseContainerMemory",   "ParameterValue":"512" },
+    { "ParameterKey":"DefenseDesiredCount",      "ParameterValue":"2" },
+    { "ParameterKey":"DefenseHealthEndpoint",    "ParameterValue":"/" },
+
+    { "ParameterKey":"DefenseBuildspecLocation", "ParameterValue":"containers/defense-api" },
+    { "ParameterKey":"DefenseEnvironmentType",   "ParameterValue":"LINUX_CONTAINER" },
+    { "ParameterKey":"DefenseComputeType",       "ParameterValue":"BUILD_GENERAL1_SMALL" },
+    { "ParameterKey":"DefenseBuildImage",        "ParameterValue":"aws/codebuild/ubuntu-base:14.04" },
+
+    { "ParameterKey":"OffenseServiceName",       "ParameterValue":"service-slayer-offense-api" },
+    { "ParameterKey":"OffenseContainerName",     "ParameterValue":"service-slayer-offense-api" },
+    { "ParameterKey":"OffenseContainerPort",     "ParameterValue":"3000" },
+    { "ParameterKey":"OffenseContainerCpu",      "ParameterValue":"256" },
+    { "ParameterKey":"OffenseContainerMemory",   "ParameterValue":"512" },
+    { "ParameterKey":"OffenseDesiredCount",      "ParameterValue":"2" },
+    { "ParameterKey":"OffenseHealthEndpoint",    "ParameterValue":"/" },
+
+    { "ParameterKey":"OffenseBuildspecLocation", "ParameterValue":"containers/offense-api" },
+    { "ParameterKey":"OffenseEnvironmentType",   "ParameterValue":"LINUX_CONTAINER" },
+    { "ParameterKey":"OffenseComputeType",       "ParameterValue":"BUILD_GENERAL1_SMALL" },
+    { "ParameterKey":"OffenseBuildImage",        "ParameterValue":"aws/codebuild/ubuntu-base:14.04" },
+
+    { "ParameterKey":"ArbiterServiceName",       "ParameterValue":"service-slayer-arbiter-api" },
+    { "ParameterKey":"ArbiterContainerName",     "ParameterValue":"service-slayer-arbiter-api" },
+    { "ParameterKey":"ArbiterContainerPort",     "ParameterValue":"3000" },
+    { "ParameterKey":"ArbiterContainerCpu",      "ParameterValue":"256" },
+    { "ParameterKey":"ArbiterContainerMemory",   "ParameterValue":"512" },
+    { "ParameterKey":"ArbiterDesiredCount",      "ParameterValue":"1" },
+    { "ParameterKey":"ArbiterHealthEndpoint",    "ParameterValue":"/" },
+
+    { "ParameterKey":"ArbiterBuildspecLocation", "ParameterValue":"containers/arbiter-api" },
+    { "ParameterKey":"ArbiterEnvironmentType",   "ParameterValue":"LINUX_CONTAINER" },
+    { "ParameterKey":"ArbiterComputeType",       "ParameterValue":"BUILD_GENERAL1_SMALL" },
+    { "ParameterKey":"ArbiterBuildImage",        "ParameterValue":"aws/codebuild/ubuntu-base:14.04" }
 ]

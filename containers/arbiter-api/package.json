@@ -1,11 +1,11 @@
 {
-  "name": "sneaky-snake-arbiter-api",
+  "name": "service-slayer-arbiter-api",
   "version": "1.0.0",
   "private": true,
   "main": "app.js",
   "scripts": {
     "start": "CLUSTER_NAME=$CLUSTER_NAME REGION_NAME=$REGION_NAME node app.js",
-    "local": "CLUSTER_NAME=sneaky-snake-cluster REGION_NAME=us-east-1 node app.js"
+    "local": "CLUSTER_NAME=service-slayer-cluster REGION_NAME=us-east-1 node app.js"
   },
   "dependencies": {
     "aws-sdk": "^2.391.0",

@@ -2,29 +2,29 @@ version: "3.6"
 
 services:
 
-  sneaky-snake-arbiter-api:
+  service-slayer-arbiter-api:
     build: ./arbiter-api/
-    container_name: sneaky-snake-arbiter-api
+    container_name: service-slayer-arbiter-api
     ports:
       - 2999:3000
     environment:
-      - CLUSTER_NAME=sneaky-snake-cluster
+      - CLUSTER_NAME=service-slayer-cluster
       - REGION_NAME=us-east-1
 
-  sneaky-snake-defense-api:
+  service-slayer-defense-api:
     build: ./defense-api/
-    container_name: sneaky-snake-defense-api
+    container_name: service-slayer-defense-api
     ports:
       - 3000:3000
 
-  sneaky-snake-offense-api:
+  service-slayer-offense-api:
     build: ./offense-api/
-    container_name: sneaky-snake-offense-api
+    container_name: service-slayer-offense-api
     ports:
       - 3001:3000
 
-  sneaky-snake-game-site:
+  service-slayer-game-site:
     build: ./game-site/
-    container_name: sneaky-snake-game-site
+    container_name: service-slayer-game-site
     ports:
       - 80:80

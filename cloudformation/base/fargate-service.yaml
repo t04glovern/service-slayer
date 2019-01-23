@@ -143,7 +143,7 @@ Resources:
         MaximumPercent: 200
         MinimumHealthyPercent: 75
       DesiredCount: !Ref DesiredCount
-      HealthCheckGracePeriodSeconds: 120
+      HealthCheckGracePeriodSeconds: 60
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
@@ -164,8 +164,8 @@ Resources:
         - CidrIp: 0.0.0.0/0
           Description: HTTP Web Port from Load Balancer
           IpProtocol: tcp
-          FromPort: !Ref ContainerPort
-          ToPort: !Ref ContainerPort
+          FromPort: 80
+          ToPort: 80
       VpcId: !Ref VPCId
 
   loadBalancer:
@@ -228,6 +228,4 @@ Outputs:
       - - !GetAtt
           - loadBalancer
           - DNSName
-        - ':'
-        - !Ref ContainerPort
         - '/'

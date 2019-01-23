@@ -20,5 +20,5 @@ Resources:
 Outputs:
 
   FargateCluster:
-    Description: Fargate Cluster for the Sneaky Snake project
+    Description: Fargate Cluster
     Value: !Ref FargateCluster
