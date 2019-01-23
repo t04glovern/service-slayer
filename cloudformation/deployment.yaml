@@ -345,8 +345,10 @@ Resources:
           !Ref DefenseServiceName
         VPCId:
           !GetAtt [ baseNetworking, Outputs.VPC ]
-        FargateContainerSubnetIDs:
+        PublicSubnetIDs:
           !GetAtt [ baseNetworking, Outputs.SubnetsPublic ]
+        PrivateSubnetIDs:
+          !GetAtt [ baseNetworking, Outputs.SubnetsPrivate ]
         FargateCluster:
           !GetAtt [ baseFargate, Outputs.FargateCluster ]
         ContainerName:
@@ -372,8 +374,10 @@ Resources:
           !Ref OffenseServiceName
         VPCId:
           !GetAtt [ baseNetworking, Outputs.VPC ]
-        FargateContainerSubnetIDs:
+        PublicSubnetIDs:
           !GetAtt [ baseNetworking, Outputs.SubnetsPublic ]
+        PrivateSubnetIDs:
+          !GetAtt [ baseNetworking, Outputs.SubnetsPrivate ]
         FargateCluster:
           !GetAtt [ baseFargate, Outputs.FargateCluster ]
         ContainerName:
@@ -399,8 +403,10 @@ Resources:
           !Ref ArbiterServiceName
         VPCId:
           !GetAtt [ baseNetworking, Outputs.VPC ]
-        FargateContainerSubnetIDs:
+        PublicSubnetIDs:
           !GetAtt [ baseNetworking, Outputs.SubnetsPublic ]
+        PrivateSubnetIDs:
+          !GetAtt [ baseNetworking, Outputs.SubnetsPrivate ]
         FargateCluster:
           !GetAtt [ baseFargate, Outputs.FargateCluster ]
         ContainerName:
@@ -425,7 +431,7 @@ Resources:
         VPC:
           !GetAtt [ baseNetworking, Outputs.VPC ]
         SubnetIDs:
-          !GetAtt [ baseNetworking, Outputs.SubnetsPublic ]
+          !GetAtt [ baseNetworking, Outputs.SubnetsPrivate ]
         FargateCluster:
           !GetAtt [ baseFargate, Outputs.FargateCluster ]
         FargateService:
@@ -452,7 +458,7 @@ Resources:
         VPC:
           !GetAtt [ baseNetworking, Outputs.VPC ]
         SubnetIDs:
-          !GetAtt [ baseNetworking, Outputs.SubnetsPublic ]
+          !GetAtt [ baseNetworking, Outputs.SubnetsPrivate ]
         FargateCluster:
           !GetAtt [ baseFargate, Outputs.FargateCluster ]
         FargateService:
@@ -479,7 +485,7 @@ Resources:
         VPC:
           !GetAtt [ baseNetworking, Outputs.VPC ]
         SubnetIDs:
-          !GetAtt [ baseNetworking, Outputs.SubnetsPublic ]
+          !GetAtt [ baseNetworking, Outputs.SubnetsPrivate ]
         FargateCluster:
           !GetAtt [ baseFargate, Outputs.FargateCluster ]
         FargateService:

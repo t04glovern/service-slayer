@@ -1,9 +1,13 @@
 # Service Slayer
 
+## Architecture
+
+![Architecture](img/architecture.png)
+
 ## Deploy Test Containers
 
 ```bash
-aws cloudformation create-stack \
+aws cloudformation update-stack \
     --stack-name "service-slayer" \
     --template-body file://cloudformation/deployment.yaml \
     --parameters file://cloudformation/deployment-params.json \

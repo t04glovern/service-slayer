@@ -109,6 +109,30 @@ Resources:
       - Key: Reach
         Value: private
 
+  NatGatewayAAttachment:
+    Type: AWS::EC2::EIP
+    DependsOn: VPCGatewayAttachment
+    Properties:
+      Domain: vpc
+
+  NatGatewayBAttachment:
+    Type: AWS::EC2::EIP
+    DependsOn: VPCGatewayAttachment
+    Properties:
+      Domain: vpc
+
+  NatGatewayA:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NatGatewayAAttachment.AllocationId
+      SubnetId: !Ref SubnetAPublic
+
+  NatGatewayB:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NatGatewayBAttachment.AllocationId
+      SubnetId: !Ref SubnetBPublic
+
   RouteTableAPublic:
     Type: 'AWS::EC2::RouteTable'
     Properties:
@@ -180,6 +204,20 @@ Resources:
       RouteTableId: !Ref RouteTableBPublic
       DestinationCidrBlock: '0.0.0.0/0'
       GatewayId: !Ref InternetGateway
+
+  RouteTablePrivateANatRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref RouteTableAPrivate
+      DestinationCidrBlock: '0.0.0.0/0'
+      NatGatewayId: !Ref NatGatewayA
+
+  RouteTablePrivateBNatRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref RouteTableBPrivate
+      DestinationCidrBlock: '0.0.0.0/0'
+      NatGatewayId: !Ref NatGatewayB
 
   NetworkAclPublic:
     Type: 'AWS::EC2::NetworkAcl'

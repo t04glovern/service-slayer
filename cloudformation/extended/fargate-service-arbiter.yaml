@@ -10,9 +10,12 @@ Parameters:
   VPCId:
     Type: 'AWS::EC2::VPC::Id'
     Description: VPC that should house this cluster
-  FargateContainerSubnetIDs:
+  PublicSubnetIDs:
     Type: 'List<AWS::EC2::Subnet::Id>'
-    Description: Subnet ID for the domain to operate in
+    Description: Subnet IDs for the ALB
+  PrivateSubnetIDs:
+    Type: 'List<AWS::EC2::Subnet::Id>'
+    Description: Subnet IDs for the Fargate Containers
   FargateCluster:
     Type: String
     Description: Fargate Cluster for this service to run on
@@ -177,7 +180,7 @@ Resources:
           AssignPublicIp: ENABLED
           SecurityGroups:
             - !Ref fargateContainerSecurityGroup
-          Subnets: !Ref FargateContainerSubnetIDs
+          Subnets: !Ref PrivateSubnetIDs
       TaskDefinition: !Ref fargateTaskDefinition
       LoadBalancers:
         - ContainerName: !Sub '${ServiceName}'
@@ -209,7 +212,7 @@ Resources:
           Value: '30'
       SecurityGroups:
         - !Ref loadBalancerSecurityGroup
-      Subnets: !Ref FargateContainerSubnetIDs
+      Subnets: !Ref PublicSubnetIDs
 
   httpLoadBalancerListener:
     Type: 'AWS::ElasticLoadBalancingV2::Listener'
@@ -220,7 +223,7 @@ Resources:
         - TargetGroupArn: !Ref targetGroup
           Type: forward
       LoadBalancerArn: !Ref loadBalancer
-      Port: !Ref ContainerPort
+      Port: 80
       Protocol: HTTP
 
   targetGroup:
