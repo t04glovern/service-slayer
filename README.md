@@ -34,9 +34,9 @@ aws cloudformation create-stack \
 
 #### ALB
 
-* **arbiter-api**: `http://<service-slayer-arbiter-api-lb>`
-* **defense-api**: `http://<service-slayer-defense-api-lb>`
-* **offense-api**: `http://<service-slayer-offense-api-lb>`
+* **arbiter-api**: `http://<service-slayer-arbiter-api-lb>` ![arbiter-api](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoicWFhSVY3R2RYTWU2SHkzbC9PaVJRR1ZkaU56RUcxRm5YbTRDTE5oUk1tY3krRTJsc0sxVFBGMlBnb2V2M01GMnpBYUowRUpaeWFIbERXQ3VTVnBtdjZRPSIsIml2UGFyYW1ldGVyU3BlYyI6IjNkMGNtTXdsdTgrb1NvL2kiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
+* **defense-api**: `http://<service-slayer-defense-api-lb>` ![defense-api](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoidWpNMW9hVEpKYmVtbEhXdG9mKzltcnZOazB1TWZyKzMzMTdSR1VZTGczck5hZTBOSW04QVJZbTU5QlJiSk1GTUQ1VUJuTDNGNjFEZG8xVW9GckhLT2pvPSIsIml2UGFyYW1ldGVyU3BlYyI6InhTdFgzSDBZa2V2cEdSU2siLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
+* **offense-api**: `http://<service-slayer-offense-api-lb>` ![offense-api](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiK1NJMEpkWldyY2pkZmpLRkt5VDVxbTVGdUlNVU1JL1h1U29HVEd6VWF4NjcxSDQ1VHdjN2JNSk01dnFoOUhBS2g0SmxpTVd1anBrZWpFM1hDN09yajMwPSIsIml2UGFyYW1ldGVyU3BlYyI6IlpPUUVoUFBPaG11NXFrbW8iLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
 
 ##### ALB Tasks
 
