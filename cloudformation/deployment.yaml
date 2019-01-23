@@ -18,8 +18,7 @@ Metadata:
     - Label:
         default: Networking Resources
       Parameters:
-        - VPCId
-        - SubnetIDs
+        - ClassB
 
     - Label:
         default: Base Fargate Cluster
@@ -63,10 +62,8 @@ Metadata:
     ProjectName:
       default: Project Name
 
-    VPCId:
-      default: Project VPC
-    SubnetIDs:
-      default: Project Subnets
+    ClassB:
+      default: (10.XXX.0.0/16)
 
     ClusterName:
       default: Cluster Name
@@ -122,12 +119,9 @@ Parameters:
     Description: Project Name (used for Tagging)
     Type: String
 
-  VPCId:
-    Type: 'AWS::EC2::VPC::Id'
-    Description: VPC that should house this cluster
-  SubnetIDs:
-    Type: 'List<AWS::EC2::Subnet::Id>'
-    Description: Subnet ID for the domain to operate in
+  ClassB:
+    Description: Class B of VPC (10.XXX.0.0/16)
+    Type: Number
 
   ClusterName:
     Description: Fargate Cluster Name (will be exported for use with resources in this project)
@@ -211,17 +205,25 @@ Resources:
           !Ref ClusterName
       TemplateURL: https://s3.amazonaws.com/devopstar/resources/sneaky-snake/cloudformation/base/fargate-cluster.yaml
 
+  baseNetworking:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        ClassB:
+          !Ref ClassB
+      TemplateURL: https://s3.amazonaws.com/devopstar/resources/sneaky-snake/cloudformation/base/vpc-networking.yaml
+
   defenseService:
-    DependsOn: [ baseFargate ]
+    DependsOn: [ baseFargate, baseNetworking ]
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
         ServiceName:
           !Ref DefenseServiceName
         VPCId:
-          !Ref VPCId
+          !GetAtt [ baseNetworking, Outputs.VPC ]
         FargateContainerSubnetIDs:
-          !Join [ ',', [ !Select [ 0, !Ref SubnetIDs ], !Select [ 1, !Ref SubnetIDs ] ] ]
+          !GetAtt [ baseNetworking, Outputs.SubnetsPublic ]
         FargateCluster:
           !GetAtt [ baseFargate, Outputs.FargateCluster ]
         ContainerName:
@@ -239,16 +241,16 @@ Resources:
       TemplateURL: https://s3.amazonaws.com/devopstar/resources/sneaky-snake/cloudformation/base/fargate-service.yaml
 
   offenseService:
-    DependsOn: [ baseFargate ]
+    DependsOn: [ baseFargate, baseNetworking ]
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
         ServiceName:
           !Ref OffenseServiceName
         VPCId:
-          !Ref VPCId
+          !GetAtt [ baseNetworking, Outputs.VPC ]
         FargateContainerSubnetIDs:
-          !Join [ ',', [ !Select [ 0, !Ref SubnetIDs ], !Select [ 1, !Ref SubnetIDs ] ] ]
+          !GetAtt [ baseNetworking, Outputs.SubnetsPublic ]
         FargateCluster:
           !GetAtt [ baseFargate, Outputs.FargateCluster ]
         ContainerName:
@@ -266,16 +268,16 @@ Resources:
       TemplateURL: https://s3.amazonaws.com/devopstar/resources/sneaky-snake/cloudformation/base/fargate-service.yaml
 
   arbiterService:
-    DependsOn: [ baseFargate ]
+    DependsOn: [ baseFargate, baseNetworking ]
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
         ServiceName:
           !Ref ArbiterServiceName
         VPCId:
-          !Ref VPCId
+          !GetAtt [ baseNetworking, Outputs.VPC ]
         FargateContainerSubnetIDs:
-          !Join [ ',', [ !Select [ 0, !Ref SubnetIDs ], !Select [ 1, !Ref SubnetIDs ] ] ]
+          !GetAtt [ baseNetworking, Outputs.SubnetsPublic ]
         FargateCluster:
           !GetAtt [ baseFargate, Outputs.FargateCluster ]
         ContainerName:

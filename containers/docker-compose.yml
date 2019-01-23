@@ -6,7 +6,7 @@ services:
     build: ./arbiter-api/
     container_name: sneaky-snake-arbiter-api
     ports:
-      - 2999:2999
+      - 2999:3000
     environment:
       - CLUSTER_NAME=sneaky-snake-cluster
       - REGION_NAME=us-east-1
@@ -21,7 +21,7 @@ services:
     build: ./offense-api/
     container_name: sneaky-snake-offense-api
     ports:
-      - 3001:3001
+      - 3001:3000
 
   sneaky-snake-game-site:
     build: ./game-site/

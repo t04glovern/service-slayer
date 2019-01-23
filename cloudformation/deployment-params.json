@@ -4,12 +4,8 @@
         "ParameterValue": "Sneaky Snake"
     },
     {
-        "ParameterKey": "VPCId",
-        "ParameterValue": "vpc-xxxxxxxx"
-    },
-    {
-        "ParameterKey": "SubnetIDs",
-        "ParameterValue": "subnet-xxxxxxxx,subnet-xxxxxxxx"
+        "ParameterKey": "ClassB",
+        "ParameterValue": "160"
     },
     {
         "ParameterKey": "ClusterName",

@@ -10,7 +10,7 @@ var ecs = new AWS.ECS({
 });
 var app = express();
 
-app.listen(2999, () => console.log('API listening on port 2999!'))
+app.listen(3000, () => console.log('API listening on port 3000!'))
 
 app.get('/', function (req, res) {
     res.send({

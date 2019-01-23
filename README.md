@@ -2,8 +2,6 @@
 
 ## Deploy Test Containers
 
-**Note:** Provide your VPC and Subnets (atleast 2) in the `cloudformation/deployment-params.json` file
-
 ```bash
 aws cloudformation create-stack \
     --stack-name "sneaky-snake" \
@@ -24,10 +22,23 @@ aws cloudformation create-stack \
 
 ### Endpoints
 
-* **arbiter-api**: `http://<sneaky-snake-arbiter-api-lb>:2999/`
-* **defense-api**: `http://<sneaky-snake-defense-api-lb>:3000/`
-* **offense-api**: `http://<sneaky-snake-offense-api-lb>:3001/`
+#### Local
 
-#### Tasks
+* **arbiter-api**: `http://localhost:2999`
+* **defense-api**: `http://localhost:3000`
+* **offense-api**: `http://localhost:3001`
 
-* **arbiter-api**: `http://<sneaky-snake-arbiter-api-lb>:2999/tasks`
+##### Local Tasks
+
+* **arbiter-api**: `http://localhost:2999/tasks`
+
+
+#### ALB
+
+* **arbiter-api**: `http://<sneaky-snake-arbiter-api-lb>`
+* **defense-api**: `http://<sneaky-snake-defense-api-lb>`
+* **offense-api**: `http://<sneaky-snake-offense-api-lb>`
+
+##### ALB Tasks
+
+* **arbiter-api**: `http://<sneaky-snake-arbiter-api-lb>/tasks`
