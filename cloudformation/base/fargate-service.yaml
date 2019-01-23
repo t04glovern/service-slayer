@@ -207,7 +207,7 @@ Resources:
       Name: !Join
         - '-'
         - - !Ref ServiceName
-          - forward
+          - fwd
       Port: !Ref ContainerPort
       Protocol: HTTP
       UnhealthyThresholdCount: 2
