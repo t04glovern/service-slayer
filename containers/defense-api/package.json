@@ -7,6 +7,6 @@
     "start": "node app.js"
   },
   "dependencies": {
-    "express": "~4.15.5"
+    "express": "^4.16.4"
   }
 }
