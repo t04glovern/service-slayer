@@ -14,6 +14,7 @@ Metadata:
         default: Project Information
       Parameters:
         - ProjectName
+        - BucketName
 
     - Label:
         default: Networking Resources
@@ -87,95 +88,100 @@ Metadata:
         - ArbiterComputeType
         - ArbiterBuildImage
 
-  ParameterLabels:
-    ProjectName:
-      default: Project Name
+    ParameterLabels:
+      ProjectName:
+        default: Project Name
+      BucketName:
+        default: Bucket Name
 
-    ClassB:
-      default: (10.XXX.0.0/16)
+      ClassB:
+        default: (10.XXX.0.0/16)
 
-    ClusterName:
-      default: Cluster Name
+      ClusterName:
+        default: Cluster Name
 
-    DefenseServiceName:
-      default: Service Name
-    DefenseContainerName:
-      default: Docker Image Name
-    DefenseContainerPort:
-      default: Container Port
-    DefenseContainerCpu:
-      default: Container Cpu
-    DefenseContainerMemory:
-      default: Container Memory
-    DefenseDesiredCount:
-      default: Number of Tasks
-    DefenseHealthEndpoint:
-      default: Health Check Endpoint
+      DefenseServiceName:
+        default: Service Name
+      DefenseContainerName:
+        default: Docker Image Name
+      DefenseContainerPort:
+        default: Container Port
+      DefenseContainerCpu:
+        default: Container Cpu
+      DefenseContainerMemory:
+        default: Container Memory
+      DefenseDesiredCount:
+        default: Number of Tasks
+      DefenseHealthEndpoint:
+        default: Health Check Endpoint
 
-    OffenseServiceName:
-      default: Service Name
-    OffenseContainerName:
-      default: Docker Image Name
-    OffenseContainerPort:
-      default: Container Port
-    OffenseContainerCpu:
-      default: Container Cpu
-    OffenseContainerMemory:
-      default: Container Memory
-    OffenseDesiredCount:
-      default: Number of Tasks
-    OffenseHealthEndpoint:
-      default: Health Check Endpoint
+      OffenseServiceName:
+        default: Service Name
+      OffenseContainerName:
+        default: Docker Image Name
+      OffenseContainerPort:
+        default: Container Port
+      OffenseContainerCpu:
+        default: Container Cpu
+      OffenseContainerMemory:
+        default: Container Memory
+      OffenseDesiredCount:
+        default: Number of Tasks
+      OffenseHealthEndpoint:
+        default: Health Check Endpoint
 
-    ArbiterServiceName:
-      default: Service Name
-    ArbiterContainerName:
-      default: Docker Image Name
-    ArbiterContainerPort:
-      default: Container Port
-    ArbiterContainerCpu:
-      default: Container Cpu
-    ArbiterContainerMemory:
-      default: Container Memory
-    ArbiterDesiredCount:
-      default: Number of Tasks
-    ArbiterHealthEndpoint:
-      default: Health Check Endpoint
+      ArbiterServiceName:
+        default: Service Name
+      ArbiterContainerName:
+        default: Docker Image Name
+      ArbiterContainerPort:
+        default: Container Port
+      ArbiterContainerCpu:
+        default: Container Cpu
+      ArbiterContainerMemory:
+        default: Container Memory
+      ArbiterDesiredCount:
+        default: Number of Tasks
+      ArbiterHealthEndpoint:
+        default: Health Check Endpoint
 
-    CodeRepositoryURL:
-      default: Git Repo URL
+      CodeRepositoryURL:
+        default: Git Repo URL
 
-    DefenseBuildspecLocation:
-      default: buildspec file
-    DefenseEnvironmentType:
-      default: Build OS
-    DefenseComputeType:
-      default: Build Resource
-    DefenseBuildImage:
-      default: Build Image
+      DefenseBuildspecLocation:
+        default: buildspec file
+      DefenseEnvironmentType:
+        default: Build OS
+      DefenseComputeType:
+        default: Build Resource
+      DefenseBuildImage:
+        default: Build Image
 
-    OffenseBuildspecLocation:
-      default: buildspec file
-    OffenseEnvironmentType:
-      default: Build OS
-    OffenseComputeType:
-      default: Build Resource
-    OffenseBuildImage:
-      default: Build Image
+      OffenseBuildspecLocation:
+        default: buildspec file
+      OffenseEnvironmentType:
+        default: Build OS
+      OffenseComputeType:
+        default: Build Resource
+      OffenseBuildImage:
+        default: Build Image
 
-    ArbiterBuildspecLocation:
-      default: buildspec file
-    ArbiterEnvironmentType:
-      default: Build OS
-    ArbiterComputeType:
-      default: Build Resource
-    ArbiterBuildImage:
-      default: Build Image
+      ArbiterBuildspecLocation:
+        default: buildspec file
+      ArbiterEnvironmentType:
+        default: Build OS
+      ArbiterComputeType:
+        default: Build Resource
+      ArbiterBuildImage:
+        default: Build Image
 
 Parameters:
 
   ProjectName:
     Description: Project Name (used for Tagging)
+    Type: String
+  BucketName:
+    Description: Bucket name where nested templates live
     Type: String
 
   ClassB:
@@ -326,7 +332,7 @@ Resources:
           !Ref ProjectName
         ClusterName:
           !Ref ClusterName
-      TemplateURL: https://s3.amazonaws.com/devopstar/resources/service-slayer/cloudformation/base/fargate-cluster.yaml
+      TemplateURL: !Sub 'https://s3.amazonaws.com/${BucketName}/resources/service-slayer/cloudformation/base/fargate-cluster.yaml'
 
   baseNetworking:
     Type: AWS::CloudFormation::Stack
@@ -334,7 +340,7 @@ Resources:
       Parameters:
         ClassB:
           !Ref ClassB
-      TemplateURL: https://s3.amazonaws.com/devopstar/resources/service-slayer/cloudformation/base/vpc-networking.yaml
+      TemplateURL: !Sub 'https://s3.amazonaws.com/${BucketName}/resources/service-slayer/cloudformation/base/vpc-networking.yaml'
 
   defenseService:
     DependsOn: [ baseFargate, baseNetworking ]
@@ -363,7 +369,7 @@ Resources:
           !Ref DefenseDesiredCount
         HealthEndpoint:
           !Ref DefenseHealthEndpoint
-      TemplateURL: https://s3.amazonaws.com/devopstar/resources/service-slayer/cloudformation/base/fargate-service.yaml
+      TemplateURL: !Sub 'https://s3.amazonaws.com/${BucketName}/resources/service-slayer/cloudformation/base/fargate-service.yaml'
 
   offenseService:
     DependsOn: [ baseFargate, baseNetworking ]
@@ -392,7 +398,7 @@ Resources:
           !Ref OffenseDesiredCount
         HealthEndpoint:
           !Ref OffenseHealthEndpoint
-      TemplateURL: https://s3.amazonaws.com/devopstar/resources/service-slayer/cloudformation/base/fargate-service.yaml
+      TemplateURL: !Sub 'https://s3.amazonaws.com/${BucketName}/resources/service-slayer/cloudformation/base/fargate-service.yaml'
 
   arbiterService:
     DependsOn: [ baseFargate, baseNetworking ]
@@ -421,7 +427,7 @@ Resources:
           !Ref ArbiterDesiredCount
         HealthEndpoint:
           !Ref ArbiterHealthEndpoint
-      TemplateURL: https://s3.amazonaws.com/devopstar/resources/service-slayer/cloudformation/extended/fargate-service-arbiter.yaml
+      TemplateURL: !Sub 'https://s3.amazonaws.com/${BucketName}/resources/service-slayer/cloudformation/extended/fargate-service-arbiter.yaml'
 
   defenseCodebuild:
     DependsOn: [ baseFargate, baseNetworking, defenseService ]
@@ -448,7 +454,7 @@ Resources:
           !Ref DefenseComputeType
         BuildImage:
           !Ref DefenseBuildImage
-      TemplateURL: https://s3.amazonaws.com/devopstar/resources/service-slayer/cloudformation/cicd/codebuild.yaml
+      TemplateURL: !Sub 'https://s3.amazonaws.com/${BucketName}/resources/service-slayer/cloudformation/cicd/codebuild.yaml'
 
   offenseCodebuild:
     DependsOn: [ baseFargate, baseNetworking, offenseService ]
@@ -475,7 +481,7 @@ Resources:
           !Ref OffenseComputeType
         BuildImage:
           !Ref OffenseBuildImage
-      TemplateURL: https://s3.amazonaws.com/devopstar/resources/service-slayer/cloudformation/cicd/codebuild.yaml
+      TemplateURL: !Sub 'https://s3.amazonaws.com/${BucketName}/resources/service-slayer/cloudformation/cicd/codebuild.yaml'
 
   arbiterCodebuild:
     DependsOn: [ baseFargate, baseNetworking, arbiterService ]
@@ -502,4 +508,18 @@ Resources:
           !Ref ArbiterComputeType
         BuildImage:
           !Ref ArbiterBuildImage
-      TemplateURL: https://s3.amazonaws.com/devopstar/resources/service-slayer/cloudformation/cicd/codebuild.yaml
+      TemplateURL: !Sub 'https://s3.amazonaws.com/${BucketName}/resources/service-slayer/cloudformation/cicd/codebuild.yaml'
+
+Outputs:
+
+  DefenseApiEndpoint:
+    Description: API Endpoint for the Defense Service
+    Value: !GetAtt [ defenseService, Outputs.EndpointUrl ]
+
+  OffenseApiEndpoint:
+    Description: API Endpoint for the Offense Service
+    Value: !GetAtt [ offenseService, Outputs.EndpointUrl ]
+
+  ArbiterApiEndpoint:
+    Description: API Endpoint for the Arbiter Service
+    Value: !GetAtt [ arbiterService, Outputs.EndpointUrl ]

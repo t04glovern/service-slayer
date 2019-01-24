@@ -7,7 +7,7 @@
 ## Deploy Test Containers
 
 ```bash
-aws cloudformation update-stack \
+aws cloudformation create-stack \
     --stack-name "service-slayer" \
     --template-body file://cloudformation/deployment.yaml \
     --parameters file://cloudformation/deployment-params.json \

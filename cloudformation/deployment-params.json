@@ -1,5 +1,6 @@
 [
-    { "ParameterKey":"ProjectName",              "ParameterValue":"Sneaky Snake" },
+    { "ParameterKey":"ProjectName",              "ParameterValue":"Service Slayer" },
+    { "ParameterKey":"BucketName",               "ParameterValue":"devopstar" },
     { "ParameterKey":"ClassB",                   "ParameterValue":"160" },
     { "ParameterKey":"ClusterName",              "ParameterValue":"service-slayer-cluster" },
     { "ParameterKey":"CodeRepositoryURL",        "ParameterValue":"https://github.com/t04glovern/service-slayer" },
